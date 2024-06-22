@@ -3,6 +3,7 @@ using System.Text;
 
 namespace SimpleBlockChain;
 
+/// <summary>The Block class represents a single block in the blockchain.</summary>
 public class Block
 {
     public int Index { get; set; }
@@ -19,9 +20,10 @@ public class Block
         PreviousHash = previousHash;
         Data = data;
         Nonce = 0;
-        Hash = CalculateHash();
+        Hash = index == 0 ? CalculateHash() : string.Empty;
     }
 
+    /// <summary>Generates a SHA256 hash based on the block’s properties.</summary>
     public string CalculateHash()
     {
         using var sha256 = SHA256.Create();
@@ -34,15 +36,21 @@ public class Block
         }
         return builder.ToString();
     }
+    
+    /// <summary>
+    /// Implements a simple proof-of-work algorithm by iterating
+    /// the nonce until a hash with the required difficulty is found.
+    /// </summary>
 
     public void MineBlock(int difficulty)
     {
         var hashValidation = new string('0', difficulty);
-        while (Hash.Substring(0, difficulty) != hashValidation)
+        while (Hash.Length == 0 || Hash.Substring(0, difficulty) != hashValidation)
         {
             Nonce++;
             Hash = CalculateHash();
         }
         Console.WriteLine($"Block mined: {Hash}");
+        Console.WriteLine();
     }
 }
